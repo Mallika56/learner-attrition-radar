@@ -1,0 +1,29 @@
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-sqlite:///./attrition.db}
+      MODEL_DIR: /app/models
+    volumes:
+      - model-data:/app/models
+
+  # Optional Postgres for a production-like local setup. Point DATABASE_URL at
+  # this service (postgresql://attrition:attrition@postgres:5432/attrition)
+  # instead of the default SQLite file when you start this profile.
+  postgres:
+    image: postgres:16-alpine
+    profiles: ["postgres"]
+    environment:
+      POSTGRES_USER: attrition
+      POSTGRES_PASSWORD: attrition
+      POSTGRES_DB: attrition
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  model-data:
+  postgres-data:
