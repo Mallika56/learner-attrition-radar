@@ -11,7 +11,9 @@ from app.ml_model import TrainingResult
 from app.models import ExperimentRun
 
 
-def record_run(db: Session, result: TrainingResult, n_estimators: int, max_depth: int) -> ExperimentRun:
+def record_run(
+    db: Session, result: TrainingResult, n_estimators: int, max_depth: int
+) -> ExperimentRun:
     run = ExperimentRun(
         model_version=result.model_version,
         n_estimators=n_estimators,

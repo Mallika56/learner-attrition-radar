@@ -34,7 +34,9 @@ def trained_model(monkeypatch):
     app's module-level state at it so /predict etc. don't need a real model file."""
     result = train(n_rows=300)
     monkeypatch.setattr(ml_model, "load", lambda: (result.model, result.model_version))
-    monkeypatch.setattr(ml_model, "load_baseline_distribution", lambda: result.baseline_distribution)
+    monkeypatch.setattr(
+        ml_model, "load_baseline_distribution", lambda: result.baseline_distribution
+    )
     return result
 
 

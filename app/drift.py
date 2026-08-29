@@ -38,7 +38,6 @@ def compute_psi_report(
     """Return per-feature PSI plus an overall status label."""
     report = {}
     for feature_name, values in recent_features.items():
-        bins = baseline_distribution.get(feature_name, {})
         if feature_name == "_bins" or not values:
             continue
         feature_bins = baseline_distribution.get("_bins", {}).get(feature_name)
