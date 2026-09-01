@@ -3,9 +3,14 @@
     python -m scripts.train_model
 """
 
+import logging
+
 from app.database import Base, SessionLocal, engine
 from app.experiment_tracking import record_run
 from app.ml_model import MAX_DEPTH, N_ESTIMATORS, save, train
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 def main() -> None:
@@ -19,8 +24,13 @@ def main() -> None:
     finally:
         db.close()
 
-    print(f"Trained {result.model_version}: AUC-ROC={result.cv_auc_roc:.3f} "
-          f"precision={result.cv_precision:.3f} recall={result.cv_recall:.3f}")
+    logger.info(
+        "Trained %s: AUC-ROC=%.3f precision=%.3f recall=%.3f",
+        result.model_version,
+        result.cv_auc_roc,
+        result.cv_precision,
+        result.cv_recall,
+    )
 
 
 if __name__ == "__main__":
