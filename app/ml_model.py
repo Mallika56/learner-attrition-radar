@@ -79,6 +79,7 @@ def train(seed: int = 42, n_rows: int = 4000) -> TrainingResult:
 
 
 def save(result: TrainingResult) -> None:
+    """Persist the trained model bundle and its baseline distribution to MODEL_DIR."""
     os.makedirs(MODEL_DIR, exist_ok=True)
     joblib.dump({"model": result.model, "model_version": result.model_version}, MODEL_PATH)
     with open(BASELINE_PATH, "w") as fh:
@@ -86,6 +87,7 @@ def save(result: TrainingResult) -> None:
 
 
 def load() -> tuple[RandomForestClassifier, str]:
+    """Load the persisted model, training and saving a fresh one first if none exists."""
     if not os.path.exists(MODEL_PATH):
         result = train()
         save(result)
@@ -95,6 +97,7 @@ def load() -> tuple[RandomForestClassifier, str]:
 
 
 def load_baseline_distribution() -> dict:
+    """Load the training-time feature distribution used as the drift baseline."""
     if not os.path.exists(BASELINE_PATH):
         return {}
     with open(BASELINE_PATH) as fh:
@@ -102,4 +105,5 @@ def load_baseline_distribution() -> dict:
 
 
 def predict(model: RandomForestClassifier, features: pd.DataFrame) -> float:
+    """Return the model's predicted dropout probability for one feature row."""
     return float(model.predict_proba(features[FEATURE_NAMES])[0][1])
