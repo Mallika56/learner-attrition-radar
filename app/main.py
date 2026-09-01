@@ -1,4 +1,6 @@
 import logging
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI
 from sqlalchemy.orm import Session
@@ -14,12 +16,6 @@ from app.schemas import LearnerTelemetry, PredictionResponse, RetrainResponse
 
 logger = logging.getLogger(__name__)
 
-app = FastAPI(
-    title="Learner Attrition Radar",
-    description="Predicts dropout risk for self-paced online learners from behavioral telemetry.",
-    version="1.0.0",
-)
-
 RISK_THRESHOLD_HIGH = 0.66
 RISK_THRESHOLD_MEDIUM = 0.33
 
@@ -34,13 +30,22 @@ def _risk_label(score: float) -> str:
     return "low"
 
 
-@app.on_event("startup")
-def on_startup() -> None:
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     Base.metadata.create_all(bind=engine)
     model, version = ml_model.load()
     _state["model"] = model
     _state["model_version"] = version
     logger.info("Loaded model %s", version)
+    yield
+
+
+app = FastAPI(
+    title="Learner Attrition Radar",
+    description="Predicts dropout risk for self-paced online learners from behavioral telemetry.",
+    version="1.0.0",
+    lifespan=lifespan,
+)
 
 
 @app.get("/health")
