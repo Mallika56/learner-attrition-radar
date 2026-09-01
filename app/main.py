@@ -50,11 +50,13 @@ app = FastAPI(
 
 @app.get("/health")
 def health() -> dict:
+    """Liveness check: reports whether a model is loaded and which version."""
     return {"status": "ok", "model_version": _state["model_version"]}
 
 
 @app.post("/predict", response_model=PredictionResponse)
 def predict(payload: LearnerTelemetry, db: Session = Depends(get_db)) -> PredictionResponse:
+    """Score one learner's telemetry, log the prediction, and return the risk label."""
     features = validate_features(payload.model_dump())
     score = ml_model.predict(_state["model"], features)
     label = _risk_label(score)
@@ -75,6 +77,7 @@ def predict(payload: LearnerTelemetry, db: Session = Depends(get_db)) -> Predict
 
 @app.get("/metrics")
 def metrics(db: Session = Depends(get_db)) -> dict:
+    """Prediction volume plus the most recent training run's cross-validated metrics."""
     run = latest_run(db)
     prediction_count = db.query(PredictionLog).count()
     if run is None:
@@ -93,6 +96,8 @@ def metrics(db: Session = Depends(get_db)) -> dict:
 
 @app.get("/drift")
 def drift(db: Session = Depends(get_db), window: int = 200) -> dict:
+    """PSI drift report comparing the last `window` predictions' feature values
+    against the training-time baseline distribution."""
     recent = (
         db.query(PredictionLog).order_by(PredictionLog.created_at.desc()).limit(window).all()
     )
