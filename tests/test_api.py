@@ -34,3 +34,30 @@ def test_retrain_promotes_a_new_model_version(client):
     assert resp.status_code == 200
     after = client.get("/health").json()["model_version"]
     assert after != before
+
+
+def test_drift_with_no_predictions_reports_insufficient_data(client):
+    resp = client.get("/drift")
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["features"] == {}
+    assert body["overall_status"] == "insufficient_data"
+
+
+def test_drift_after_predictions_reports_per_feature_psi(client):
+    for _ in range(5):
+        client.post("/predict", json=SAMPLE_TELEMETRY)
+    resp = client.get("/drift")
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["overall_status"] in {"stable", "moderate_shift", "significant_shift"}
+    assert set(body["features"]) <= {
+        "avg_session_length_minutes",
+        "days_since_last_login",
+        "quiz_avg_score",
+        "video_completion_rate",
+        "forum_posts_count",
+        "assignment_submission_rate",
+    }
+    for feature_report in body["features"].values():
+        assert feature_report["status"] in {"stable", "moderate_shift", "significant_shift"}
