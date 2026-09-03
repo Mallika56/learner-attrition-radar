@@ -29,6 +29,10 @@ MAX_DEPTH = 8
 
 @dataclass
 class TrainingResult:
+    """Everything one training run produces: the fitted model, its version,
+    cross-validated metrics, and the feature-distribution baseline used for
+    drift tracking."""
+
     model: RandomForestClassifier
     model_version: str
     n_training_rows: int
