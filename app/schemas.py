@@ -2,6 +2,8 @@ from pydantic import BaseModel, Field
 
 
 class LearnerTelemetry(BaseModel):
+    """Request body for POST /predict: one learner's behavioral telemetry."""
+
     avg_session_length_minutes: float = Field(..., ge=0, le=600)
     days_since_last_login: float = Field(..., ge=0, le=365)
     quiz_avg_score: float = Field(..., ge=0, le=100)
@@ -24,6 +26,8 @@ class LearnerTelemetry(BaseModel):
 
 
 class PredictionResponse(BaseModel):
+    """Response body for POST /predict: the scored risk for one learner."""
+
     model_config = {"protected_namespaces": ()}
 
     risk_score: float
@@ -32,6 +36,8 @@ class PredictionResponse(BaseModel):
 
 
 class RetrainResponse(BaseModel):
+    """Response body for POST /retrain: the newly promoted model's metrics."""
+
     model_config = {"protected_namespaces": ()}
 
     model_version: str
