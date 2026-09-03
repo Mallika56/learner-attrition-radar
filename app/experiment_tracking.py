@@ -14,6 +14,7 @@ from app.models import ExperimentRun
 def record_run(
     db: Session, result: TrainingResult, n_estimators: int, max_depth: int
 ) -> ExperimentRun:
+    """Persist one training run's hyperparameters and cross-validated metrics."""
     run = ExperimentRun(
         model_version=result.model_version,
         n_estimators=n_estimators,
@@ -30,4 +31,5 @@ def record_run(
 
 
 def latest_run(db: Session) -> ExperimentRun | None:
+    """Return the most recently recorded training run, or None if none exist yet."""
     return db.query(ExperimentRun).order_by(ExperimentRun.created_at.desc()).first()
