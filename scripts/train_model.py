@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 def main() -> None:
+    """Train the ensemble, persist it, and log the run as a new experiment."""
     Base.metadata.create_all(bind=engine)
     result = train()
     save(result)
