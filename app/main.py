@@ -32,6 +32,7 @@ def _risk_label(score: float) -> str:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+    """Startup hook: create tables if missing and load (or train) the model into `_state`."""
     Base.metadata.create_all(bind=engine)
     model, version = ml_model.load()
     _state["model"] = model
