@@ -28,6 +28,7 @@ ARROWS = [
 
 
 def main() -> None:
+    """Render the architecture diagram and save it to screenshots/architecture.png."""
     fig, ax = plt.subplots(figsize=(10, 6))
     ax.set_xlim(0, 1)
     ax.set_ylim(0.05, 0.95)
