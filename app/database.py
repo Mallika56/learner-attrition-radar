@@ -1,7 +1,8 @@
 import os
+from collections.abc import Generator
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import DeclarativeBase, sessionmaker
+from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
 DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///./attrition.db")
 
@@ -14,7 +15,7 @@ class Base(DeclarativeBase):
     """Declarative base class every ORM model in this app inherits from."""
 
 
-def get_db():
+def get_db() -> Generator[Session, None, None]:
     """FastAPI dependency: yield a request-scoped session, closing it afterward."""
     db = SessionLocal()
     try:
