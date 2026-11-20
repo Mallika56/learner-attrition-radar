@@ -15,6 +15,7 @@ PSI_MODERATE = 0.25
 
 
 def _psi_for_feature(actual_values: list[float], bins: list[float]) -> float:
+    """Compute the Population Stability Index for one feature against baseline bin edges."""
     bins = sorted(set(bins))
     if len(bins) < 3 or not actual_values:
         return 0.0
