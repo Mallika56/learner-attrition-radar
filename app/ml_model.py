@@ -43,6 +43,7 @@ class TrainingResult:
 
 
 def _model_version() -> str:
+    """Generate a timestamp-based version string for a freshly trained model."""
     return datetime.datetime.utcnow().strftime("rf-%Y%m%d%H%M%S")
 
 
