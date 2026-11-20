@@ -23,6 +23,7 @@ _state: dict = {"model": None, "model_version": None}
 
 
 def _risk_label(score: float) -> str:
+    """Map a predicted dropout probability to a "high"/"medium"/"low" risk bucket."""
     if score >= RISK_THRESHOLD_HIGH:
         return "high"
     if score >= RISK_THRESHOLD_MEDIUM:
